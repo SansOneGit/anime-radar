@@ -2,8 +2,8 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ACG Radar - Final Version</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ACG Radar - Transparent Export</title>
     <style>
         :root {
             --primary: #FF3B30;
@@ -24,6 +24,7 @@
             margin: 0;
             padding: 40px 20px;
             box-sizing: border-box;
+            overflow-x: hidden; 
         }
 
         h1 {
@@ -32,6 +33,8 @@
             margin-bottom: 40px;
             letter-spacing: -0.5px;
             text-transform: uppercase;
+            text-align: center;
+            width: 100%;
         }
 
         .container {
@@ -102,22 +105,24 @@
         input[type="range"] {
             -webkit-appearance: none;
             width: 100%;
-            height: 5px;
+            height: 4px; 
             background: #F2F2F7;
-            border-radius: 5px;
+            border-radius: 2px;
             outline: none;
+            margin: 10px 0;
         }
 
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
-            width: 20px;
-            height: 20px;
+            width: 24px; 
+            height: 24px;
             background: var(--text-main);
             border-radius: 50%;
             cursor: pointer;
             box-shadow: 0 2px 6px rgba(0,0,0,0.2);
             transition: transform 0.2s;
-            border: 2px solid #fff;
+            border: 3px solid #fff;
+            margin-top: -10px; 
         }
         
         input[type="range"]::-webkit-slider-thumb:hover {
@@ -168,11 +173,12 @@
             width: 100%;
             font-size: 1rem;
             margin-top: auto; 
+            -webkit-tap-highlight-color: transparent;
         }
 
-        .btn:hover {
-            background: #000;
-            transform: translateY(-1px);
+        .btn:active {
+            transform: scale(0.98);
+            opacity: 0.9;
         }
 
         .file-upload {
@@ -212,20 +218,42 @@
             object-fit: contain;
         }
 
+        /* 移动端适配 */
         @media (max-width: 768px) {
+            body {
+                padding: 20px 15px; 
+            }
+
+            h1 {
+                font-size: 6vw; 
+                white-space: nowrap;
+                margin-bottom: 25px;
+            }
+
             .container {
                 display: flex;
                 flex-direction: column;
-                gap: 30px;
+                gap: 25px;
             }
-            .card { height: auto; }
+            
+            .card { 
+                height: auto; 
+                padding: 20px; 
+            }
+            
             .preview-area { padding-top: 30px; }
+            
+            input[type="range"]::-webkit-slider-thumb {
+                width: 28px;
+                height: 28px;
+                margin-top: -12px;
+            }
         }
     </style>
 </head>
 <body>
 
-    <h1>ANIME RADAR <span style="color:var(--primary)">.Sans</span></h1>
+    <h1>ANIME RADAR <span style="color:var(--primary)">.PRO</span></h1>
 
     <div class="container">
         <div class="card controls">
@@ -247,27 +275,27 @@
                 
                 <div class="input-group">
                     <label>剧情脚本 (Story) <span class="value-display" id="v1">5</span></label>
-                    <input type="range" min="1" max="10" step="0.5" value="5" oninput="updateVal('v1', this.value)">
+                    <input type="range" min="0" max="10" step="0.5" value="5" oninput="updateVal('v1', this.value)">
                 </div>
                 <div class="input-group">
                     <label>作画视觉 (Visuals) <span class="value-display" id="v2">5</span></label>
-                    <input type="range" min="1" max="10" step="0.5" value="5" oninput="updateVal('v2', this.value)">
+                    <input type="range" min="0" max="10" step="0.5" value="5" oninput="updateVal('v2', this.value)">
                 </div>
                 <div class="input-group">
                     <label>角色塑造 (Character) <span class="value-display" id="v3">5</span></label>
-                    <input type="range" min="1" max="10" step="0.5" value="5" oninput="updateVal('v3', this.value)">
+                    <input type="range" min="0" max="10" step="0.5" value="5" oninput="updateVal('v3', this.value)">
                 </div>
                 <div class="input-group">
                     <label>音乐音效 (Sound) <span class="value-display" id="v4">5</span></label>
-                    <input type="range" min="1" max="10" step="0.5" value="5" oninput="updateVal('v4', this.value)">
+                    <input type="range" min="0" max="10" step="0.5" value="5" oninput="updateVal('v4', this.value)">
                 </div>
                 <div class="input-group">
                     <label>演出表现 (Direction) <span class="value-display" id="v5">5</span></label>
-                    <input type="range" min="1" max="10" step="0.5" value="5" oninput="updateVal('v5', this.value)">
+                    <input type="range" min="0" max="10" step="0.5" value="5" oninput="updateVal('v5', this.value)">
                 </div>
             </div>
 
-            <button class="btn" onclick="downloadImage()">导出高清 PNG</button>
+            <button class="btn" onclick="downloadImage()">导出透明 PNG</button>
         </div>
 
         <div class="card preview-area" id="captureArea">
@@ -441,14 +469,12 @@
             // --- Stats Card ---
             const avgScore = (values.reduce((a, b) => a + b, 0) / 5).toFixed(1);
             const maxVal = Math.max(...values);
-            // 修改点：如果所有分数都相等（例如初始状态），强制显示“无”
             let maxLabels = labels.filter((_, i) => values[i] === maxVal);
             
             if (maxLabels.length === 5) {
                 maxLabels = ["无"];
             }
             
-            // 字体大小逻辑
             let rightFontSize = 34; 
             let lineHeight = 38;
             if (maxLabels.length > 2) { 
@@ -457,14 +483,10 @@
             }
             const rightFontStr = `800 ${rightFontSize}px -apple-system, BlinkMacSystemFont, sans-serif`;
 
-            // 左侧字体放大逻辑：只有当右侧确实有多行时才放大，如果是"无"，则不放大
             let leftFontSize = rightFontSize;
-            if (maxLabels.length > 1) {
-                leftFontSize = 52; 
-            }
+            if (maxLabels.length > 1) { leftFontSize = 52; }
             const leftFontStr = `800 ${leftFontSize}px -apple-system, BlinkMacSystemFont, sans-serif`;
 
-            // Calculate Box Height
             let baseHeight = 120;
             let addedHeight = 0;
             if (maxLabels.length > 1) {
@@ -476,23 +498,18 @@
             const statsBoxH = baseHeight + addedHeight;
             const statsBoxR = 24;
 
-            // Background
             ctx.fillStyle = COLORS.statsBg;
             ctx.roundRect(centerX - statsBoxW/2, statsBoxY, statsBoxW, statsBoxH, statsBoxR);
             ctx.fill();
 
-            // Divider Line
             ctx.beginPath();
             ctx.moveTo(centerX, statsBoxY + 25);
             ctx.lineTo(centerX, statsBoxY + statsBoxH - 25);
-            ctx.strokeStyle = "#D1D1D6"; 
-            ctx.lineWidth = 2;
-            ctx.stroke();
+            ctx.strokeStyle = "#D1D1D6"; ctx.lineWidth = 2; ctx.stroke();
 
-            // --- Text Drawing ---
             const textStartY = statsBoxY + 85;
 
-            // Right Side (Best Field)
+            // Right
             const rightX = centerX + statsBoxW/4;
             ctx.textAlign = "center";
             ctx.fillStyle = COLORS.subText;
@@ -504,14 +521,13 @@
                 ctx.fillText(label, rightX, textStartY + (i * lineHeight));
             });
 
-            // Left Side (Average)
+            // Left
             const leftX = centerX - statsBoxW/4;
             ctx.fillStyle = COLORS.subText;
             ctx.font = "600 14px -apple-system, BlinkMacSystemFont, sans-serif";
             ctx.fillText("综合评分 / AVERAGE", leftX, statsBoxY + 35);
             ctx.fillStyle = COLORS.text;
             ctx.font = leftFontStr; 
-            
             let leftY = textStartY;
             if (maxLabels.length > 1) {
                 leftY = textStartY + ((maxLabels.length - 1) * lineHeight) / 2;
@@ -519,29 +535,45 @@
             ctx.fillText(avgScore, leftX, leftY); 
         }
 
+        // --- 核心修复：透明背景 & 手机端弹窗提示 ---
         function downloadImage() {
+            // 1. 判断是否为移动端
+            const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
+            
+            if (isMobile) {
+                // 手机端：提示截图
+                alert("如无法下载，请截图保存");
+            }
+
+            // 2. 准备画布
             const tempCanvas = document.createElement('canvas');
             const headerHeight = 140; 
             tempCanvas.width = canvas.width;
             tempCanvas.height = canvas.height + headerHeight; 
             const tCtx = tempCanvas.getContext('2d');
             
-            tCtx.fillStyle = "#FFFFFF";
-            tCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+            // 3. 关键修改：【不要】填充白色背景，保持透明
+            // tCtx.fillStyle = "#FFFFFF";
+            // tCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+            // 默认就是透明的，所以什么都不用填
 
+            // 4. 绘制标题（文字在透明背景上，注意深色文字在深色底可能会看不清，但这符合"透明PNG"的要求）
             const title = document.getElementById('displayTitle').innerText;
-            tCtx.fillStyle = COLORS.text;
+            tCtx.fillStyle = COLORS.text; 
             tCtx.font = "800 50px -apple-system, BlinkMacSystemFont, sans-serif";
             tCtx.textAlign = "center";
             tCtx.fillText(title, tempCanvas.width/2, 80); 
 
+            // 5. 绘制副标题
             tCtx.fillStyle = COLORS.primary;
             tCtx.font = "700 16px -apple-system, BlinkMacSystemFont, sans-serif";
             tCtx.letterSpacing = "4px";
             tCtx.fillText("RADAR ANALYSIS", tempCanvas.width/2, 115);
 
+            // 6. 绘制雷达图
             tCtx.drawImage(canvas, 0, headerHeight); 
 
+            // 7. 触发下载
             const link = document.createElement('a');
             link.download = `${title}_Analysis.png`;
             link.href = tempCanvas.toDataURL('image/png');
