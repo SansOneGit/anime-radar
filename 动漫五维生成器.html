@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACG五维战力图生成器</title>
+    <style>
+        :root {
+            --primary: #ff6b6b;
+            --bg: #1a1a2e;
+            --card: rgba(255, 255, 255, 0.1);
+            --text: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            font-style: italic;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px var(--primary);
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+            justify-content: center;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .controls {
+            background: var(--card);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+            width: 300px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+            color: #ccc;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--primary);
+        }
+
+        .value-display {
+            float: right;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid #444;
+            color: white;
+            border-radius: 5px;
+            box-sizing: border-box; 
+        }
+
+        .preview-area {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        canvas {
+            max-width: 100%;
+            filter: drop-shadow(0 0 20px rgba(0,0,0,0.5));
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 20px;
+            transition: all 0.3s;
+            width: 100%;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .file-upload {
+            margin-bottom: 20px;
+            text-align: center;
+            border: 2px dashed rgba(255,255,255,0.3);
+            padding: 20px;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        
+        .file-upload:hover {
+            border-color: var(--primary);
+        }
+
+        #hidden-img { display: none; }
+    </style>
+</head>
+<body>
+
+    <h1>ANIME RADAR GENERATOR</h1>
+
+    <div class="container">
+        <div class="controls">
+            <div class="input-group">
+                <div class="file-upload" onclick="document.getElementById('coverInput').click()">
+                    点击上传番剧封面<br>
+                    <span style="font-size:0.8em; opacity:0.7">(自动提取主题色)</span>
+                </div>
+                <input type="file" id="coverInput" accept="image/*" style="display: none" onchange="handleImageUpload(this)">
+            </div>
+
+            <div class="input-group">
+                <label>番剧名称</label>
+                <input type="text" id="animeTitle" value="进击的巨人" oninput="draw()">
+            </div>
+
+            <hr style="border-color: rgba(255,255,255,0.1)">
+
+            <div class="input-group">
+                <label>剧情脚本 (Story) <span class="value-display" id="v1">9.0</span></label>
+                <input type="range" min="4" max="10" step="0.1" value="9.0" oninput="updateVal('v1', this.value)">
+            </div>
+            <div class="input-group">
+                <label>作画视觉 (Visuals) <span class="value-display" id="v2">8.5</span></label>
+                <input type="range" min="4" max="10" step="0.1" value="8.5" oninput="updateVal('v2', this.value)">
+            </div>
+            <div class="input-group">
+                <label>角色塑造 (Character) <span class="value-display" id="v3">8.0</span></label>
+                <input type="range" min="4" max="10" step="0.1" value="8.0" oninput="updateVal('v3', this.value)">
+            </div>
+            <div class="input-group">
+                <label>音乐音效 (Sound) <span class="value-display" id="v4">9.5</span></label>
+                <input type="range" min="4" max="10" step="0.1" value="9.5" oninput="updateVal('v4', this.value)">
+            </div>
+            <div class="input-group">
+                <label>演出表现 (Direction) <span class="value-display" id="v5">8.8</span></label>
+                <input type="range" min="4" max="10" step="0.1" value="8.8" oninput="updateVal('v5', this.value)">
+            </div>
+
+            <button class="btn" onclick="downloadImage()">导出透明PNG</button>
+        </div>
+
+        <div class="preview-area">
+            <canvas id="radarCanvas" width="800" height="800"></canvas>
+            <img id="hidden-img" alt="hidden">
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('radarCanvas');
+        const ctx = canvas.getContext('2d');
+        let themeColor = '#ff6b6b'; // Default color
+        let uploadedImage = null;
+
+        // Init
+        window.onload = draw;
+
+        function updateVal(id, val) {
+            document.getElementById(id).innerText = val;
+            draw();
+        }
+
+        function handleImageUpload(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const img = document.getElementById('hidden-img');
+                    img.src = e.target.result;
+                    img.onload = function() {
+                        uploadedImage = img;
+                        extractColor(img);
+                        draw();
+                    }
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // Simple algorithm to extract dominant color from center of image
+        function extractColor(img) {
+            const tempCanvas = document.createElement('canvas');
+            const tempCtx = tempCanvas.getContext('2d');
+            tempCanvas.width = 100;
+            tempCanvas.height = 100;
+            tempCtx.drawImage(img, 0, 0, 100, 100);
+            
+            // Sample center pixel
+            const p = tempCtx.getImageData(50, 50, 1, 1).data;
+            themeColor = `rgb(${p[0]}, ${p[1]}, ${p[2]})`;
+            
+            // Update CSS variable for UI
+            document.documentElement.style.setProperty('--primary', themeColor);
+        }
+
+        function draw() {
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Settings
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2 + 30; // Shift down slightly for title
+            const radius = 250;
+            const labels = ["剧情脚本", "作画视觉", "角色塑造", "音乐音效", "演出表现"];
+            const labelsEn = ["STORY", "VISUALS", "CHARACTER", "SOUND", "DIRECTION"];
+            
+            // Get values
+            const values = [
+                parseFloat(document.getElementById('v1').innerText),
+                parseFloat(document.getElementById('v2').innerText),
+                parseFloat(document.getElementById('v3').innerText),
+                parseFloat(document.getElementById('v4').innerText),
+                parseFloat(document.getElementById('v5').innerText)
+            ];
+
+            // 1. Draw Title
+            const title = document.getElementById('animeTitle').value;
+            ctx.fillStyle = "white";
+            ctx.font = "bold italic 60px 'Segoe UI', sans-serif";
+            ctx.textAlign = "center";
+            ctx.shadowColor = themeColor;
+            ctx.shadowBlur = 15;
+            ctx.fillText(title, centerX, 80);
+            ctx.shadowBlur = 0; // Reset
+
+            // 2. Draw Background Pentagon (Grid)
+            ctx.strokeStyle = "rgba(255, 255, 255, 0.2)";
+            ctx.lineWidth = 2;
+            
+            for (let i = 0; i <= 5; i++) { // 5 concentric rings
+                ctx.beginPath();
+                const r = (radius / 5) * i;
+                for (let j = 0; j < 5; j++) {
+                    const angle = (Math.PI * 2 * j / 5) - Math.PI / 2;
+                    const x = centerX + Math.cos(angle) * r;
+                    const y = centerY + Math.sin(angle) * r;
+                    if (j === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.closePath();
+                ctx.stroke();
+            }
+
+            // Draw axis lines
+            for (let j = 0; j < 5; j++) {
+                const angle = (Math.PI * 2 * j / 5) - Math.PI / 2;
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.lineTo(centerX + Math.cos(angle) * radius, centerY + Math.sin(angle) * radius);
+                ctx.stroke();
+            }
+
+            // 3. Draw Data Polygon
+            ctx.beginPath();
+            ctx.lineWidth = 4;
+            ctx.strokeStyle = themeColor;
+            ctx.fillStyle = themeColor.replace('rgb', 'rgba').replace(')', ', 0.5)'); // Make it transparent
+
+            for (let j = 0; j < 5; j++) {
+                // Scale 4-10 range to 0-1 percentage for radius
+                // If value is 4, radius is 0. If 10, radius is full.
+                let val = values[j];
+                let percent = (val - 3) / 7; // Mapping 3 as center point (0 radius) to avoid tiny shapes
+                if (percent < 0) percent = 0.1;
+                
+                const r = radius * percent;
+                const angle = (Math.PI * 2 * j / 5) - Math.PI / 2;
+                const x = centerX + Math.cos(angle) * r;
+                const y = centerY + Math.sin(angle) * r;
+                
+                if (j === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+
+            // Add glow to the polygon
+            ctx.shadowColor = themeColor;
+            ctx.shadowBlur = 20;
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+
+            // 4. Draw Labels & Scores
+            ctx.fillStyle = "white";
+            
+            for (let j = 0; j < 5; j++) {
+                const angle = (Math.PI * 2 * j / 5) - Math.PI / 2;
+                // Text position further out than radius
+                const textRadius = radius + 60; 
+                const x = centerX + Math.cos(angle) * textRadius;
+                const y = centerY + Math.sin(angle) * textRadius;
+
+                // Main Label
+                ctx.font = "bold 24px 'Segoe UI', sans-serif";
+                ctx.fillText(labels[j], x, y - 15);
+                
+                // English Label (Sub)
+                ctx.font = "14px 'Segoe UI', sans-serif";
+                ctx.fillStyle = "rgba(255,255,255,0.6)";
+                ctx.fillText(labelsEn[j], x, y + 5);
+
+                // Score
+                ctx.font = "bold 32px monospace";
+                ctx.fillStyle = themeColor;
+                ctx.fillText(values[j].toFixed(1), x, y + 40);
+                
+                ctx.fillStyle = "white"; // Reset
+            }
+
+            // 5. Draw Image Thumbnail (Optional) - circular clip
+            if (uploadedImage) {
+                ctx.save();
+                ctx.beginPath();
+                // Draw circle at bottom right
+                const imgR = 60;
+                const imgX = canvas.width - imgR - 20;
+                const imgY = canvas.height - imgR - 20;
+                ctx.arc(imgX, imgY, imgR, 0, Math.PI * 2, true);
+                ctx.closePath();
+                ctx.clip();
+                
+                // Draw image maintaining aspect ratio
+                const scale = Math.max(imgR*2 / uploadedImage.width, imgR*2 / uploadedImage.height);
+                const w = uploadedImage.width * scale;
+                const h = uploadedImage.height * scale;
+                ctx.drawImage(uploadedImage, imgX - w/2, imgY - h/2, w, h);
+                
+                // Border
+                ctx.strokeStyle = "white";
+                ctx.lineWidth = 5;
+                ctx.stroke();
+                ctx.restore();
+            }
+        }
+
+        function downloadImage() {
+            const link = document.createElement('a');
+            link.download = `${document.getElementById('animeTitle').value}_Radar.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+    </script>
+</body>
+</html>
