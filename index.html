@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ACG Radar - Aligned Pro</title>
+    <title>ACG Radar - Final Spacing</title>
     <style>
         :root {
             --primary: #FF3B30; /* Apple Red */
@@ -34,18 +34,15 @@
             text-transform: uppercase;
         }
 
-        /* --- 修改核心：使用 Grid 实现强制等高 --- */
         .container {
             display: grid;
-            /* 定义两列，宽度相等 */
             grid-template-columns: 1fr 1fr; 
             gap: 40px;
             width: 100%;
-            max-width: 1000px; /*稍微限制总宽，让界面更精致*/
-            align-items: stretch; /* 关键：强制拉伸对齐高度 */
+            max-width: 1000px;
+            align-items: stretch; /* 强制等高 */
         }
 
-        /* 通用卡片样式 */
         .card {
             background: var(--card-bg);
             padding: 30px;
@@ -53,35 +50,30 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.06);
             display: flex;
             flex-direction: column;
-            /* 保证内容在高度拉伸时也能合理分布 */
-            justify-content: flex-start; 
         }
 
-        /* 左侧控制区 */
         .controls {
-            /* 确保左侧内容撑满高度，分布对齐 */
             justify-content: space-between; 
         }
 
-        /* 右侧预览区 */
+        /* --- 修改点1：右侧卡片增加顶部内边距 --- */
         .preview-area {
             align-items: center;
             position: relative;
-            padding-top: 0; /* 标题现在是HTML，不需要顶部留白 */
+            padding-top: 50px; /* 让标题离方框顶部远一点 */
+            padding-bottom: 40px;
         }
 
-        /* --- 标题对齐优化 --- */
-        /* 右侧标题不再画在Canvas里，而是作为HTML元素，为了和左侧对齐 */
+        /* --- 修改点2：增加标题下方的间距 --- */
         .chart-header {
             width: 100%;
             text-align: center;
-            margin-bottom: 10px;
-            /* 这里的 margin-top 用来微调，使其和左边的输入框视觉水平对齐 */
-            margin-top: 5px; 
+            margin-bottom: 50px; /* 拉开标题和下方雷达图的距离 */
+            margin-top: 0;
         }
 
         .chart-title {
-            font-size: 2.5rem;
+            font-size: 2.8rem; /* 稍微加大标题 */
             font-weight: 800;
             margin: 0;
             line-height: 1.2;
@@ -94,12 +86,10 @@
             font-weight: 700;
             letter-spacing: 2px;
             text-transform: uppercase;
+            margin-top: 5px;
         }
 
-        /* 输入组微调 */
-        .input-group {
-            margin-bottom: 20px;
-        }
+        .input-group { margin-bottom: 20px; }
 
         label {
             display: flex;
@@ -109,10 +99,8 @@
             font-weight: 600;
             color: var(--text-sub);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
 
-        /* 滑块样式 */
         input[type="range"] {
             -webkit-appearance: none;
             width: 100%;
@@ -131,12 +119,12 @@
             cursor: pointer;
             box-shadow: 0 2px 6px rgba(0,0,0,0.2);
             transition: transform 0.2s;
-            border: 2px solid #fff; /* 增加白边，更精致 */
+            border: 2px solid #fff;
         }
         
         input[type="range"]::-webkit-slider-thumb:hover {
             transform: scale(1.1);
-            background: var(--primary); /* 悬停变色 */
+            background: var(--primary);
         }
 
         .value-display {
@@ -166,7 +154,6 @@
             outline: none;
         }
 
-        /* 按钮 */
         .btn {
             background: var(--text-main);
             color: white;
@@ -177,7 +164,7 @@
             font-weight: 700;
             width: 100%;
             font-size: 1rem;
-            margin-top: auto; /* 将按钮推到底部，保证左右底部对齐 */
+            margin-top: auto; 
         }
 
         .btn:hover {
@@ -195,7 +182,6 @@
             color: var(--text-sub);
             font-size: 0.9em;
             transition: all 0.3s;
-            /* 让上传框和标题区域对齐 */
             height: 80px; 
             display: flex;
             flex-direction: column;
@@ -216,27 +202,21 @@
 
         #hidden-img { display: none; }
 
-        /* Canvas设置 */
         canvas {
             width: 100%;
             height: auto;
-            /* 限制高度，防止把卡片撑得比左边高 */
-            max-height: 500px; 
+            max-height: 600px; /* 限制显示高度，防止溢出 */
             object-fit: contain;
         }
 
-        /* 移动端适配 */
         @media (max-width: 768px) {
             .container {
                 display: flex;
-                flex-direction: column; /* 手机上改回单列 */
+                flex-direction: column;
                 gap: 30px;
             }
-            
-            /* 手机上可以稍微放松高度限制 */
-            .card {
-                height: auto; 
-            }
+            .card { height: auto; }
+            .preview-area { padding-top: 30px; }
         }
     </style>
 </head>
@@ -246,7 +226,6 @@
 
     <div class="container">
         <div class="card controls">
-            
             <div>
                 <div class="input-group">
                     <div class="file-upload" onclick="document.getElementById('coverInput').click()">
@@ -289,13 +268,12 @@
         </div>
 
         <div class="card preview-area" id="captureArea">
-            
             <div class="chart-header">
                 <h2 class="chart-title" id="displayTitle">进击的巨人</h2>
                 <div class="chart-subtitle">RADAR ANALYSIS</div>
             </div>
 
-            <canvas id="radarCanvas" width="800" height="650"></canvas>
+            <canvas id="radarCanvas" width="800" height="800"></canvas>
             <img id="hidden-img" alt="hidden">
         </div>
     </div>
@@ -322,7 +300,6 @@
         function updateTitle() {
             const val = document.getElementById('animeTitleInput').value;
             document.getElementById('displayTitle').innerText = val;
-            // 标题变了不需要重绘 Canvas，因为标题现在在 Canvas 外面
         }
 
         function updateVal(id, val) {
@@ -346,18 +323,17 @@
         }
 
         function draw() {
-            // 设置高清绘图
             ctx.imageSmoothingEnabled = true;
             ctx.imageSmoothingQuality = 'high';
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
-            // 重要：Canvas背景设为透明，因为我们现在有了白色的卡片底
-            // 如果导出时需要白底，我们在 downloadImage 函数里处理
-
+            // --- 坐标系统调整 ---
             const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2 - 40; // 稍微上移，给底部统计留空间
-            const radius = 200; // 调整半径大小以适配
+            // 修改点：将雷达图中心略微上移（因为我们增加了总高度，下面要留给统计）
+            // 之前的 centerY 可能会导致和上方标题太近，这里设为 320 左右（总高800）
+            const centerY = 320; 
+            const radius = 200; 
             
             const labels = ["剧情脚本", "作画视觉", "角色塑造", "音乐音效", "演出表现"];
             const labelsEn = ["STORY", "VISUALS", "CHARACTER", "SOUND", "DIRECTION"];
@@ -370,7 +346,7 @@
                 parseInt(document.getElementById('v5').innerText)
             ];
 
-            // --- 绘制网格 ---
+            // 绘制网格
             ctx.lineWidth = 1.5;
             ctx.strokeStyle = COLORS.grid;
             
@@ -396,7 +372,7 @@
                 ctx.stroke();
             }
 
-            // --- 绘制数据 ---
+            // 绘制数据
             ctx.beginPath();
             ctx.lineWidth = 4;
             ctx.strokeStyle = COLORS.primary;
@@ -416,38 +392,34 @@
                 else ctx.lineTo(x, y);
             }
             ctx.closePath();
-            // 阴影
             ctx.shadowColor = "rgba(255, 59, 48, 0.4)";
             ctx.shadowBlur = 20;
             ctx.fill();
             ctx.shadowBlur = 0;
             ctx.stroke();
 
-            // --- 绘制标签 ---
+            // 绘制标签
             for (let j = 0; j < 5; j++) {
                 const angle = (Math.PI * 2 * j / 5) - Math.PI / 2;
-                const textRadius = radius + 60; 
+                const textRadius = radius + 65; 
                 const x = centerX + Math.cos(angle) * textRadius;
                 const y = centerY + Math.sin(angle) * textRadius;
 
                 ctx.textAlign = "center";
-                // 中文
                 ctx.font = "700 24px -apple-system, BlinkMacSystemFont, sans-serif";
                 ctx.fillStyle = COLORS.text;
                 ctx.fillText(labels[j], x, y - 10);
                 
-                // 英文
                 ctx.font = "600 13px -apple-system, BlinkMacSystemFont, sans-serif";
                 ctx.fillStyle = COLORS.subText;
                 ctx.fillText(labelsEn[j], x, y + 8);
 
-                // 分数
                 ctx.font = "800 32px -apple-system, BlinkMacSystemFont, sans-serif";
                 ctx.fillStyle = COLORS.primary;
                 ctx.fillText(values[j], x, y + 45);
             }
 
-            // --- 绘制中心封面 ---
+            // 绘制封面
             if (uploadedImage) {
                 ctx.save();
                 ctx.beginPath();
@@ -469,16 +441,17 @@
                 ctx.stroke();
             }
 
-            // --- 底部统计 ---
+            // --- 修改点4：底部统计下移 ---
             const avgScore = (values.reduce((a, b) => a + b, 0) / 5).toFixed(1);
             const maxVal = Math.max(...values);
             const maxLabels = labels.filter((_, i) => values[i] === maxVal);
             let bestStatText = maxLabels.join("/");
             if (bestStatText.length > 8) bestStatText = maxLabels[0] + "...";
 
-            const statsY = canvas.height - 60;
+            // 将统计数据放在画布的最下方 (Y=720左右)
+            // 雷达图中心在320，半径200，底部边缘在520。所以720有足够的留白。
+            const statsY = 720;
             
-            // 左侧统计
             ctx.textAlign = "center";
             ctx.fillStyle = COLORS.subText;
             ctx.font = "600 16px -apple-system, BlinkMacSystemFont, sans-serif";
@@ -486,52 +459,52 @@
             
             ctx.fillStyle = COLORS.text;
             ctx.font = "800 40px -apple-system, BlinkMacSystemFont, sans-serif";
-            ctx.fillText(avgScore, centerX - 150, statsY + 40);
+            ctx.fillText(avgScore, centerX - 150, statsY + 45);
 
-            // 分割线
             ctx.beginPath();
             ctx.moveTo(centerX, statsY);
-            ctx.lineTo(centerX, statsY + 40);
+            ctx.lineTo(centerX, statsY + 45);
             ctx.strokeStyle = "#E5E5EA";
             ctx.lineWidth = 2;
             ctx.stroke();
 
-            // 右侧统计
             ctx.fillStyle = COLORS.subText;
             ctx.font = "600 16px -apple-system, BlinkMacSystemFont, sans-serif";
             ctx.fillText("BEST FIELD", centerX + 150, statsY);
 
             ctx.fillStyle = COLORS.primary; 
             ctx.font = "700 28px -apple-system, BlinkMacSystemFont, sans-serif";
-            ctx.fillText(bestStatText, centerX + 150, statsY + 35);
+            ctx.fillText(bestStatText, centerX + 150, statsY + 40);
         }
 
         function downloadImage() {
-            // 因为现在标题在Canvas外面了，我们不能只下载Canvas
-            // 简单的方案：创建一个临时的Canvas，把标题写进去再下载
-            // 或者：为了简单起见，我们还是只下载雷达图部分，但把标题临时画进去
-            
             const tempCanvas = document.createElement('canvas');
+            // 导出高度也增加，包含标题留白
             tempCanvas.width = canvas.width;
-            tempCanvas.height = canvas.height + 100; // 增加高度给标题
+            tempCanvas.height = canvas.height + 150; 
             const tCtx = tempCanvas.getContext('2d');
             
-            // 1. 填充白底
+            // 白底
             tCtx.fillStyle = "#FFFFFF";
             tCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
 
-            // 2. 绘制标题
+            // 绘制标题 (位置也要调整，不能太靠上)
             const title = document.getElementById('displayTitle').innerText;
             tCtx.fillStyle = COLORS.text;
-            tCtx.font = "800 60px -apple-system, BlinkMacSystemFont, sans-serif";
+            tCtx.font = "800 64px -apple-system, BlinkMacSystemFont, sans-serif";
             tCtx.textAlign = "center";
-            tCtx.fillText(title, tempCanvas.width/2, 80);
+            tCtx.fillText(title, tempCanvas.width/2, 100); // Title Y
 
-            // 3. 绘制原来的Canvas内容
-            tCtx.drawImage(canvas, 0, 100); // 下移100像素
+            tCtx.fillStyle = COLORS.primary;
+            tCtx.font = "700 20px -apple-system, BlinkMacSystemFont, sans-serif";
+            tCtx.letterSpacing = "4px";
+            tCtx.fillText("RADAR ANALYSIS", tempCanvas.width/2, 140);
+
+            // 绘制雷达图，下移
+            tCtx.drawImage(canvas, 0, 150); 
 
             const link = document.createElement('a');
-            link.download = `${document.getElementById('displayTitle').innerText}_Radar.png`;
+            link.download = `${title}_Radar.png`;
             link.href = tempCanvas.toDataURL('image/png');
             link.click();
         }
