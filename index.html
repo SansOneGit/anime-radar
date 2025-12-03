@@ -3,24 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ACG五维战力图生成器 - Pro</title>
+    <title>ACG五维战力图生成器 - Ultimate</title>
     <style>
         :root {
-            /* Apple Style Palette */
-            --primary: #FF2E63; /* 默认动漫粉，会随图片变色 */
-            --bg: #F5F5F7; /* Apple 浅灰背景 */
+            --primary: #FF3B30; /* Apple System Red - 更加正的红色 */
+            --bg: #F5F5F7;
             --card-bg: #FFFFFF;
-            --text-main: #1D1D1F; /* Apple 深灰文本 */
-            --text-secondary: #86868B;
-            --shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
-            --shadow-lg: 0 12px 30px rgba(0,0,0,0.08); /* 柔和弥散阴影 */
+            --text-main: #1D1D1F;
+            --text-sub: #86868B;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             background-color: var(--bg);
-            /* 一个极其微妙的背景纹理，增加一点动感 */
-            background-image: radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.8) 0%, rgba(245, 245, 247, 0.8) 90%);
             color: var(--text-main);
             display: flex;
             flex-direction: column;
@@ -28,253 +23,206 @@
             min-height: 100vh;
             margin: 0;
             padding: 40px 20px;
-            box-sizing: border-box;
         }
 
-        /* 标题设计：极简中的一点动感 */
         h1 {
             font-weight: 800;
-            font-size: 2.5rem;
-            letter-spacing: -0.02em;
+            font-size: 2.2rem;
             margin-bottom: 40px;
-            position: relative;
-            color: var(--text-main);
-        }
-        
-        h1::after {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 60px;
-            height: 4px;
-            background: var(--primary);
-            border-radius: 2px;
-            transition: background 0.3s ease;
+            letter-spacing: -1px;
         }
 
         .container {
             display: flex;
             flex-wrap: wrap;
-            gap: 60px;
+            gap: 50px;
             justify-content: center;
             align-items: flex-start;
             width: 100%;
-            max-width: 1100px;
+            max-width: 1200px;
         }
 
-        /* Apple Style Card */
+        /* 左侧控制面板 */
         .controls {
             background: var(--card-bg);
-            padding: 40px;
-            border-radius: 24px; /* 更大的圆角 */
+            padding: 30px;
+            border-radius: 20px;
             width: 100%;
-            max-width: 360px;
-            box-shadow: var(--shadow-lg);
-            border: none; /* 移除边框 */
-            transition: transform 0.3s ease;
-        }
-        
-        .controls:hover {
-             transform: translateY(-2px);
+            max-width: 320px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
         }
 
         .input-group {
-            margin-bottom: 24px;
+            margin-bottom: 20px;
         }
 
         label {
             display: flex;
             justify-content: space-between;
             margin-bottom: 8px;
-            font-size: 0.95em;
+            font-size: 0.9em;
             font-weight: 600;
             color: var(--text-main);
         }
 
-        /* 重新设计滑动条：极简风格 */
+        /* 极简滑动条 */
         input[type="range"] {
             -webkit-appearance: none;
             width: 100%;
-            height: 6px;
-            background: #E5E5EA; /* 浅灰轨道 */
-            border-radius: 3px;
+            height: 4px;
+            background: #E5E5EA;
+            border-radius: 2px;
             outline: none;
         }
 
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
-            width: 22px;
-            height: 22px;
-            background: var(--primary);
+            width: 20px;
+            height: 20px;
+            background: var(--text-main); /* 黑色滑块，更酷 */
             border-radius: 50%;
             cursor: pointer;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-            transition: transform 0.2s, background 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: transform 0.2s;
         }
         
         input[type="range"]::-webkit-slider-thumb:hover {
-            transform: scale(1.1);
+            transform: scale(1.2);
         }
 
         .value-display {
             color: var(--primary);
-            font-feature-settings: "tnum"; /* 等宽数字 */
-            transition: color 0.3s ease;
+            font-feature-settings: "tnum";
+            font-weight: 700;
         }
 
         input[type="text"] {
             width: 100%;
-            padding: 12px 16px;
+            padding: 12px;
             background: #F2F2F7;
             border: none;
             color: var(--text-main);
-            border-radius: 12px;
+            border-radius: 10px;
             box-sizing: border-box;
             font-size: 1em;
-            outline: none;
-            transition: box-shadow 0.2s;
-        }
-        
-        input[type="text"]:focus {
-            box-shadow: 0 0 0 3px rgba(var(--primary), 0.2); /* 使用主题色的聚焦光环 */
+            font-weight: 500;
         }
 
+        /* 预览区域 */
         .preview-area {
             flex: 1;
-            min-width: 400px;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
-            /* 给画布也加一个干净的卡片底座 */
             background: var(--card-bg);
-            border-radius: 30px;
-            box-shadow: var(--shadow-lg);
+            padding: 20px;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+            position: relative;
         }
 
         canvas {
             max-width: 100%;
-            /* 移除之前的外部阴影，让内部发光更干净 */
-            /* filter: drop-shadow(0 0 20px rgba(0,0,0,0.5)); */
+            height: auto;
         }
 
-        /* 按钮：Pill Shape */
+        /* 按钮 */
         .btn {
-            background: var(--primary);
+            background: var(--text-main); /* 纯黑按钮 */
             color: white;
             border: none;
-            padding: 14px 24px;
-            border-radius: 50px; /* 胶囊形状 */
+            padding: 15px;
+            border-radius: 12px;
             cursor: pointer;
             font-weight: 600;
-            font-size: 1.05em;
-            margin-top: 30px;
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             width: 100%;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            margin-top: 20px;
+            transition: opacity 0.3s;
         }
 
         .btn:hover {
-            opacity: 0.95;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            opacity: 0.8;
         }
 
         .file-upload {
-            margin-bottom: 24px;
+            margin-bottom: 20px;
             text-align: center;
             background: #F2F2F7;
-            border: 2px dashed #C7C7CC;
-            padding: 24px;
-            border-radius: 16px;
+            border: 1px dashed #C7C7CC;
+            padding: 20px;
+            border-radius: 12px;
             cursor: pointer;
-            color: var(--text-secondary);
+            color: var(--text-sub);
+            font-size: 0.9em;
             transition: all 0.3s;
         }
         
         .file-upload:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-            background: rgba(255, 255, 255, 0.8);
-        }
-
-        hr {
-            border: none;
-            height: 1px;
-            background: #E5E5EA;
-            margin: 30px 0;
+            border-color: var(--text-main);
+            color: var(--text-main);
         }
 
         #hidden-img { display: none; }
-        
-        /* 移动端适配 */
-        @media (max-width: 768px) {
-            .container {
-                flex-direction: column;
-                align-items: center;
-                gap: 30px;
-            }
-            .controls, .preview-area {
-                max-width: 100%;
-                width: 100%;
-            }
-             .preview-area {
-                min-width: auto;
-                padding: 10px;
-            }
-            h1 { font-size: 2rem; }
+
+        /* 统计数据辅助显示（可选，手机端看数据更直观） */
+        .stats-panel {
+            margin-top: 20px;
+            padding: 15px;
+            background: #F9F9F9;
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: var(--text-sub);
+            display: none; /* 默认隐藏，因为canvas里已经画了 */
         }
     </style>
 </head>
 <body>
 
-    <h1>ANIME RADAR</h1>
+    <h1>ANIME RADAR <span style="color:var(--primary)">.PRO</span></h1>
 
     <div class="container">
         <div class="controls">
             <div class="input-group">
                 <div class="file-upload" onclick="document.getElementById('coverInput').click()">
-                    点击上传番剧封面<br>
-                    <span style="font-size:0.85em; opacity:0.8">(自动提取主题色)</span>
+                    点击替换中心封面<br>
+                    <span style="opacity: 0.6; font-size: 0.8em">建议使用正方形图片</span>
                 </div>
                 <input type="file" id="coverInput" accept="image/*" style="display: none" onchange="handleImageUpload(this)">
             </div>
 
             <div class="input-group">
-                 <label>番剧名称</label>
+                <label>番剧名称</label>
                 <input type="text" id="animeTitle" value="进击的巨人" oninput="draw()">
             </div>
 
-            <hr>
+            <hr style="border: 0; border-top: 1px solid #E5E5EA; margin: 25px 0;">
 
             <div class="input-group">
-                <label>剧情脚本 (Story) <span class="value-display" id="v1">9.0</span></label>
-                <input type="range" min="4" max="10" step="0.1" value="9.0" oninput="updateVal('v1', this.value)">
+                <label>剧情脚本 (Story) <span class="value-display" id="v1">9</span></label>
+                <input type="range" min="4" max="10" step="1" value="9" oninput="updateVal('v1', this.value)">
             </div>
             <div class="input-group">
-                <label>作画视觉 (Visuals) <span class="value-display" id="v2">8.5</span></label>
-                <input type="range" min="4" max="10" step="0.1" value="8.5" oninput="updateVal('v2', this.value)">
+                <label>作画视觉 (Visuals) <span class="value-display" id="v2">9</span></label>
+                <input type="range" min="4" max="10" step="1" value="9" oninput="updateVal('v2', this.value)">
             </div>
             <div class="input-group">
-                <label>角色塑造 (Character) <span class="value-display" id="v3">8.0</span></label>
-                <input type="range" min="4" max="10" step="0.1" value="8.0" oninput="updateVal('v3', this.value)">
+                <label>角色塑造 (Character) <span class="value-display" id="v3">8</span></label>
+                <input type="range" min="4" max="10" step="1" value="8" oninput="updateVal('v3', this.value)">
             </div>
             <div class="input-group">
-                <label>音乐音效 (Sound) <span class="value-display" id="v4">9.5</span></label>
-                <input type="range" min="4" max="10" step="0.1" value="9.5" oninput="updateVal('v4', this.value)">
+                <label>音乐音效 (Sound) <span class="value-display" id="v4">10</span></label>
+                <input type="range" min="4" max="10" step="1" value="10" oninput="updateVal('v4', this.value)">
             </div>
             <div class="input-group">
-                <label>演出表现 (Direction) <span class="value-display" id="v5">8.8</span></label>
-                <input type="range" min="4" max="10" step="0.1" value="8.8" oninput="updateVal('v5', this.value)">
+                <label>演出表现 (Direction) <span class="value-display" id="v5">9</span></label>
+                <input type="range" min="4" max="10" step="1" value="9" oninput="updateVal('v5', this.value)">
             </div>
 
-            <button class="btn" onclick="downloadImage()">导出高清 PNG</button>
+            <button class="btn" onclick="downloadImage()">保存分析图</button>
         </div>
 
         <div class="preview-area">
-            <canvas id="radarCanvas" width="800" height="800"></canvas>
+            <canvas id="radarCanvas" width="800" height="900"></canvas>
             <img id="hidden-img" alt="hidden">
         </div>
     </div>
@@ -282,15 +230,21 @@
     <script>
         const canvas = document.getElementById('radarCanvas');
         const ctx = canvas.getContext('2d');
-        // 默认颜色改为一个更动漫的玫红色
-        let themeColorRgb = '255, 46, 99'; 
-        let themeColor = `rgb(${themeColorRgb})`; 
+        
+        // 固定的 Apple Style 配色
+        const COLORS = {
+            primary: '#FF3B30', // 主色红
+            bg: '#FFFFFF',      // 背景白
+            grid: '#E5E5EA',    // 网格灰
+            text: '#1D1D1F',    // 标题黑
+            subText: '#86868B', // 副标灰
+            fill: 'rgba(255, 59, 48, 0.25)' // 填充色
+        };
+
         let uploadedImage = null;
 
         window.onload = function() {
-             // 初始化主题色
-             document.documentElement.style.setProperty('--primary', themeColor);
-             draw();
+            draw();
         };
 
         function updateVal(id, val) {
@@ -306,60 +260,49 @@
                     img.src = e.target.result;
                     img.onload = function() {
                         uploadedImage = img;
-                        extractColor(img);
-                        draw();
+                        draw(); // 不再提取颜色，保持风格统一
                     }
                 }
                 reader.readAsDataURL(input.files[0]);
             }
         }
 
-        function extractColor(img) {
-            const tempCanvas = document.createElement('canvas');
-            const tempCtx = tempCanvas.getContext('2d');
-            tempCanvas.width = 100;
-            tempCanvas.height = 100;
-            tempCtx.drawImage(img, 0, 0, 100, 100);
-            const p = tempCtx.getImageData(50, 50, 1, 1).data;
-            themeColorRgb = `${p[0]}, ${p[1]}, ${p[2]}`;
-            themeColor = `rgb(${themeColorRgb})`;
-            // Update CSS variable for UI
-            document.documentElement.style.setProperty('--primary', themeColor);
-        }
-
         function draw() {
+            // 清空画布
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
-            // 设置：画布背景设为透明，适应白色底座
+            // 填充白色背景（防止导出png时背景透明看不清字）
+            // 如果你一定要透明背景，可以注释掉下面这两行，但建议保留以获得卡片感
+            // ctx.fillStyle = COLORS.bg;
+            // ctx.fillRect(0,0, canvas.width, canvas.height);
+
+            // 布局参数
             const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2 + 20;
-            const radius = 250;
+            const centerY = canvas.height / 2 - 20; // 稍微上移一点，给底部统计留空间
+            const radius = 240;
             const labels = ["剧情脚本", "作画视觉", "角色塑造", "音乐音效", "演出表现"];
             const labelsEn = ["STORY", "VISUALS", "CHARACTER", "SOUND", "DIRECTION"];
             
             const values = [
-                parseFloat(document.getElementById('v1').innerText),
-                parseFloat(document.getElementById('v2').innerText),
-                parseFloat(document.getElementById('v3').innerText),
-                parseFloat(document.getElementById('v4').innerText),
-                parseFloat(document.getElementById('v5').innerText)
+                parseInt(document.getElementById('v1').innerText),
+                parseInt(document.getElementById('v2').innerText),
+                parseInt(document.getElementById('v3').innerText),
+                parseInt(document.getElementById('v4').innerText),
+                parseInt(document.getElementById('v5').innerText)
             ];
 
-            // 1. Draw Title (改成深色，但保留一点光晕)
+            // --- 1. 绘制标题 (增加间距) ---
             const title = document.getElementById('animeTitle').value;
-            ctx.fillStyle = "#1D1D1F"; // 深色文字
-            ctx.font = "800 italic 60px -apple-system, BlinkMacSystemFont, sans-serif";
+            ctx.fillStyle = COLORS.text;
+            ctx.font = "800 64px -apple-system, BlinkMacSystemFont, sans-serif";
             ctx.textAlign = "center";
-            // 微妙的彩色光晕，提升层次感
-            ctx.shadowColor = `rgba(${themeColorRgb}, 0.4)`;
-            ctx.shadowBlur = 10;
-            ctx.fillText(title, centerX, 70);
-            ctx.shadowBlur = 0; 
+            ctx.fillText(title, centerX, 80); // 标题位置固定在顶部
 
-            // 2. Draw Background Grid (更干净的浅灰色)
-            ctx.strokeStyle = "rgba(0, 0, 0, 0.08)"; // 非常淡的灰色
+            // --- 2. 绘制网格 (极简灰线) ---
             ctx.lineWidth = 1.5;
+            ctx.strokeStyle = COLORS.grid;
             
+            // 同心圆网格
             for (let i = 0; i <= 5; i++) {
                 ctx.beginPath();
                 const r = (radius / 5) * i;
@@ -374,6 +317,7 @@
                 ctx.stroke();
             }
 
+            // 轴线
             for (let j = 0; j < 5; j++) {
                 const angle = (Math.PI * 2 * j / 5) - Math.PI / 2;
                 ctx.beginPath();
@@ -382,17 +326,18 @@
                 ctx.stroke();
             }
 
-            // 3. Draw Data Polygon (核心动漫元素：能量感)
+            // --- 3. 绘制数据多边形 ---
             ctx.beginPath();
             ctx.lineWidth = 4;
-            ctx.strokeStyle = themeColor;
-            // 使用半透明填充
-            ctx.fillStyle = `rgba(${themeColorRgb}, 0.3)`; 
+            ctx.strokeStyle = COLORS.primary;
+            ctx.fillStyle = COLORS.fill;
 
             for (let j = 0; j < 5; j++) {
                 let val = values[j];
-                let percent = (val - 3) / 7; 
-                if (percent < 0) percent = 0.1;
+                // 映射: 4分是中心点(0)，10分是外圈(100%)
+                // 公式: (val - 4) / 6
+                let percent = (val - 4) / 6; 
+                if (percent < 0) percent = 0; 
                 
                 const r = radius * percent;
                 const angle = (Math.PI * 2 * j / 5) - Math.PI / 2;
@@ -403,76 +348,106 @@
                 else ctx.lineTo(x, y);
             }
             ctx.closePath();
-            
-            // 关键点：在白色背景上，光晕要更柔和、更大气
-            ctx.shadowColor = themeColor;
-            ctx.shadowBlur = 30; // 增加模糊半径
+            // 简单的发光效果
+            ctx.shadowColor = "rgba(255, 59, 48, 0.4)";
+            ctx.shadowBlur = 20;
             ctx.fill();
-            // 再次描边以突出边缘
-            ctx.shadowBlur = 10;
+            ctx.shadowBlur = 0; // Reset
             ctx.stroke();
-            ctx.shadowBlur = 0;
 
-            // 4. Draw Labels & Scores (改成深色文字)
-            ctx.textAlign = "center";
+            // --- 4. 绘制文字标签 ---
             for (let j = 0; j < 5; j++) {
                 const angle = (Math.PI * 2 * j / 5) - Math.PI / 2;
-                const textRadius = radius + 70; 
+                // 把文字推得更远一点，彻底防止重叠
+                const textRadius = radius + 65; 
                 const x = centerX + Math.cos(angle) * textRadius;
                 const y = centerY + Math.sin(angle) * textRadius;
 
-                // Main Label
-                ctx.font = "700 24px -apple-system, BlinkMacSystemFont, sans-serif";
-                ctx.fillStyle = "#1D1D1F"; // 深色
-                ctx.fillText(labels[j], x, y - 18);
+                // 中文指标
+                ctx.font = "700 22px -apple-system, BlinkMacSystemFont, sans-serif";
+                ctx.fillStyle = COLORS.text;
+                ctx.fillText(labels[j], x, y - 10);
                 
-                // English Label
-                ctx.font = "600 14px -apple-system, BlinkMacSystemFont, sans-serif";
-                ctx.fillStyle = "#86868B"; // 灰色
-                ctx.fillText(labelsEn[j], x, y + 4);
+                // 英文指标
+                ctx.font = "600 12px -apple-system, BlinkMacSystemFont, sans-serif";
+                ctx.fillStyle = COLORS.subText;
+                ctx.fillText(labelsEn[j], x, y + 8);
 
-                // Score (使用主题色，数字字体)
-                ctx.font = "700 36px -apple-system, BlinkMacSystemFont, sans-serif";
-                ctx.fillStyle = themeColor;
-                ctx.fillText(values[j].toFixed(1), x, y + 45);
+                // 分数 (整数)
+                ctx.font = "800 32px -apple-system, BlinkMacSystemFont, sans-serif";
+                ctx.fillStyle = COLORS.primary;
+                ctx.fillText(values[j], x, y + 45);
             }
 
-            // 5. Draw Image Thumbnail
+            // --- 5. 绘制中心封面图 (核心圆球) ---
             if (uploadedImage) {
                 ctx.save();
                 ctx.beginPath();
-                const imgR = 60;
-                const imgX = canvas.width - imgR - 30;
-                const imgY = canvas.height - imgR - 30;
-                
-                // 添加一个柔和的阴影给图片
-                ctx.shadowColor = "rgba(0,0,0,0.2)";
-                ctx.shadowBlur = 15;
-                ctx.shadowOffsetY = 5;
-                ctx.arc(imgX, imgY, imgR, 0, Math.PI * 2, true);
+                const imgR = 45; // 中心圆的大小
+                ctx.arc(centerX, centerY, imgR, 0, Math.PI * 2, true);
                 ctx.closePath();
-                ctx.fill(); // Fill to apply shadow
-                ctx.shadowBlur = 0; // Reset shadow for clipping
-
+                
+                // 裁剪
                 ctx.clip();
                 
+                // 绘制图片
                 const scale = Math.max(imgR*2 / uploadedImage.width, imgR*2 / uploadedImage.height);
                 const w = uploadedImage.width * scale;
                 const h = uploadedImage.height * scale;
-                ctx.drawImage(uploadedImage, imgX - w/2, imgY - h/2, w, h);
-                
-                // Border改成白色内描边，更精致
-                ctx.strokeStyle = "#FFFFFF";
-                ctx.lineWidth = 6;
-                ctx.stroke();
+                ctx.drawImage(uploadedImage, centerX - w/2, centerY - h/2, w, h);
                 ctx.restore();
+
+                // 绘制白色边框，让图片和网格区分开
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, imgR, 0, Math.PI * 2, true);
+                ctx.strokeStyle = "white";
+                ctx.lineWidth = 4;
+                ctx.stroke();
             }
+
+            // --- 6. 底部统计区域 (新增) ---
+            const avgScore = (values.reduce((a, b) => a + b, 0) / 5).toFixed(1);
+            // 找最高分
+            const maxVal = Math.max(...values);
+            // 找最高分对应的标签（可能有多个）
+            const maxLabels = labels.filter((_, i) => values[i] === maxVal);
+            const bestStatText = maxLabels.join(" / ");
+
+            const statsY = canvas.height - 100;
+            
+            // 左边：综合评分
+            ctx.textAlign = "center";
+            ctx.fillStyle = COLORS.subText;
+            ctx.font = "500 20px -apple-system, BlinkMacSystemFont, sans-serif";
+            ctx.fillText("AVERAGE SCORE", centerX - 180, statsY);
+            
+            ctx.fillStyle = COLORS.text;
+            ctx.font = "800 50px -apple-system, BlinkMacSystemFont, sans-serif";
+            ctx.fillText(avgScore, centerX - 180, statsY + 50);
+
+            // 中间：分割线
+            ctx.beginPath();
+            ctx.moveTo(centerX, statsY);
+            ctx.lineTo(centerX, statsY + 50);
+            ctx.strokeStyle = "#E5E5EA";
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // 右边：最强领域
+            ctx.fillStyle = COLORS.subText;
+            ctx.font = "500 20px -apple-system, BlinkMacSystemFont, sans-serif";
+            ctx.fillText("BEST PERFORMANCE", centerX + 180, statsY);
+
+            ctx.fillStyle = COLORS.primary; // 用红色高亮最强项
+            ctx.font = "700 30px -apple-system, BlinkMacSystemFont, sans-serif";
+            // 如果文字太长，稍微缩小字体
+            if (bestStatText.length > 5) ctx.font = "700 24px -apple-system, BlinkMacSystemFont, sans-serif";
+            ctx.fillText(bestStatText, centerX + 180, statsY + 45);
         }
 
         function downloadImage() {
             const link = document.createElement('a');
-            link.download = `${document.getElementById('animeTitle').value}_Radar_Pro.png`;
-            // 导出时确保背景是透明的（虽然画布看起来在白卡片上，但画布本身是透明底）
+            link.download = `${document.getElementById('animeTitle').value}_Analysis.png`;
             link.href = canvas.toDataURL('image/png');
             link.click();
         }
