@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ACG Radar - Transparent Export</title>
+    <title>ACG Radar - Dual Export</title>
     <style>
         :root {
             --primary: #FF3B30;
@@ -162,7 +162,15 @@
             opacity: 0.6;
         }
 
+        /* --- 新增：按钮组样式 --- */
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: auto;
+        }
+
         .btn {
+            flex: 1; /* 平分宽度 */
             background: var(--text-main);
             color: white;
             border: none;
@@ -170,10 +178,15 @@
             border-radius: 14px;
             cursor: pointer;
             font-weight: 700;
-            width: 100%;
-            font-size: 1rem;
-            margin-top: auto; 
+            font-size: 0.95rem; /* 稍微调小一点字体以容纳文字 */
             -webkit-tap-highlight-color: transparent;
+            transition: opacity 0.2s;
+        }
+        
+        /* 第二个按钮用不同颜色区分（可选，这里用灰色背景深色字，更像Apple风格） */
+        .btn-secondary {
+            background: #E5E5EA;
+            color: var(--text-main);
         }
 
         .btn:active {
@@ -295,7 +308,10 @@
                 </div>
             </div>
 
-            <button class="btn" onclick="downloadImage()">导出透明 PNG</button>
+            <div class="btn-group">
+                <button class="btn" onclick="downloadImage('png')">透明 PNG</button>
+                <button class="btn btn-secondary" onclick="downloadImage('jpg')">白底 JPG</button>
+            </div>
         </div>
 
         <div class="card preview-area" id="captureArea">
@@ -535,14 +551,13 @@
             ctx.fillText(avgScore, leftX, leftY); 
         }
 
-        // --- 核心修复：透明背景 & 手机端弹窗提示 ---
-        function downloadImage() {
+        // --- 核心更新：参数化下载 ---
+        function downloadImage(type) {
             // 1. 判断是否为移动端
             const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
             
             if (isMobile) {
-                // 手机端：提示截图
-                alert("如无法下载，请截图保存");
+                alert("如无法下载，请长按图片截图保存");
             }
 
             // 2. 准备画布
@@ -552,12 +567,16 @@
             tempCanvas.height = canvas.height + headerHeight; 
             const tCtx = tempCanvas.getContext('2d');
             
-            // 3. 关键修改：【不要】填充白色背景，保持透明
-            // tCtx.fillStyle = "#FFFFFF";
-            // tCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
-            // 默认就是透明的，所以什么都不用填
+            // 3. 根据类型处理背景
+            if (type === 'jpg') {
+                // 白底 JPG
+                tCtx.fillStyle = "#FFFFFF";
+                tCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+            } else {
+                // 透明 PNG (什么都不做，默认透明)
+            }
 
-            // 4. 绘制标题（文字在透明背景上，注意深色文字在深色底可能会看不清，但这符合"透明PNG"的要求）
+            // 4. 绘制文字 (文字在透明背景上，注意深色文字)
             const title = document.getElementById('displayTitle').innerText;
             tCtx.fillStyle = COLORS.text; 
             tCtx.font = "800 50px -apple-system, BlinkMacSystemFont, sans-serif";
@@ -575,8 +594,16 @@
 
             // 7. 触发下载
             const link = document.createElement('a');
-            link.download = `${title}_Analysis.png`;
-            link.href = tempCanvas.toDataURL('image/png');
+            
+            if (type === 'jpg') {
+                link.download = `${title}_Analysis.jpg`;
+                // JPG 质量 0.9
+                link.href = tempCanvas.toDataURL('image/jpeg', 0.9);
+            } else {
+                link.download = `${title}_Analysis.png`;
+                link.href = tempCanvas.toDataURL('image/png');
+            }
+            
             link.click();
         }
     </script>
