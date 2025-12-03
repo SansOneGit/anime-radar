@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ACG Radar - Dual Export</title>
+    <title>ACG Radar - Centered Export</title>
     <style>
         :root {
             --primary: #FF3B30;
@@ -162,7 +162,6 @@
             opacity: 0.6;
         }
 
-        /* --- 新增：按钮组样式 --- */
         .btn-group {
             display: flex;
             gap: 12px;
@@ -170,7 +169,7 @@
         }
 
         .btn {
-            flex: 1; /* 平分宽度 */
+            flex: 1; 
             background: var(--text-main);
             color: white;
             border: none;
@@ -178,12 +177,11 @@
             border-radius: 14px;
             cursor: pointer;
             font-weight: 700;
-            font-size: 0.95rem; /* 稍微调小一点字体以容纳文字 */
+            font-size: 0.95rem; 
             -webkit-tap-highlight-color: transparent;
             transition: opacity 0.2s;
         }
         
-        /* 第二个按钮用不同颜色区分（可选，这里用灰色背景深色字，更像Apple风格） */
         .btn-secondary {
             background: #E5E5EA;
             color: var(--text-main);
@@ -227,11 +225,11 @@
         canvas {
             width: 100%;
             height: auto;
-            max-height: 700px; 
+            /* 预留足够高度给动态增长 */
+            max-height: 800px; 
             object-fit: contain;
         }
 
-        /* 移动端适配 */
         @media (max-width: 768px) {
             body {
                 padding: 20px 15px; 
@@ -320,7 +318,7 @@
                 <div class="chart-subtitle">RADAR ANALYSIS</div>
             </div>
 
-            <canvas id="radarCanvas" width="800" height="900"></canvas>
+            <canvas id="radarCanvas" width="800" height="1000"></canvas>
             <img id="hidden-img" alt="hidden">
         </div>
     </div>
@@ -338,6 +336,9 @@
             fill: 'rgba(255, 59, 48, 0.25)',
             statsBg: '#F5F5F7'
         };
+
+        const labels = ["剧情脚本", "作画视觉", "角色塑造", "音乐音效", "演出表现"];
+        const labelsEn = ["STORY", "VISUALS", "CHARACTER", "SOUND", "DIRECTION"];
 
         let uploadedImage = null;
 
@@ -392,9 +393,6 @@
             const centerX = canvas.width / 2;
             const centerY = 320; 
             const radius = 200; 
-            
-            const labels = ["剧情脚本", "作画视觉", "角色塑造", "音乐音效", "演出表现"];
-            const labelsEn = ["STORY", "VISUALS", "CHARACTER", "SOUND", "DIRECTION"];
             
             const values = [
                 parseFloat(document.getElementById('v1').innerText),
@@ -551,59 +549,87 @@
             ctx.fillText(avgScore, leftX, leftY); 
         }
 
-        // --- 核心更新：参数化下载 ---
         function downloadImage(type) {
-            // 1. 判断是否为移动端
             const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
-            
             if (isMobile) {
                 alert("如无法下载，请长按图片截图保存");
             }
 
-            // 2. 准备画布
+            // 1. 获取当前数据以计算真实高度
+            const values = [
+                parseFloat(document.getElementById('v1').innerText),
+                parseFloat(document.getElementById('v2').innerText),
+                parseFloat(document.getElementById('v3').innerText),
+                parseFloat(document.getElementById('v4').innerText),
+                parseFloat(document.getElementById('v5').innerText)
+            ];
+            const maxVal = Math.max(...values);
+            let maxLabels = labels.filter((_, i) => values[i] === maxVal);
+            if (maxLabels.length === 5) maxLabels = ["无"];
+
+            // 2. 模拟 draw() 中的高度计算
+            let lineHeight = 38;
+            if (maxLabels.length > 2) lineHeight = 30;
+            let baseHeight = 120;
+            let addedHeight = 0;
+            if (maxLabels.length > 1) {
+                addedHeight = (maxLabels.length - 1) * lineHeight;
+            }
+            const statsBoxY = 640;
+            const statsBoxH = baseHeight + addedHeight;
+            
+            // 3. 计算内容的真实底部位置 (Y坐标)
+            const contentBottom = statsBoxY + statsBoxH;
+
+            // 4. 定义导出参数
+            const headerHeight = 140; // 给标题预留的高度
+            const bottomPadding = 60; // 底部额外留白，保持垂直平衡
+            
             const tempCanvas = document.createElement('canvas');
-            const headerHeight = 140; 
             tempCanvas.width = canvas.width;
-            tempCanvas.height = canvas.height + headerHeight; 
+            
+            // 5. 设定画布高度 = 标题 + 内容真实高度 + 底部留白
+            // (注意：canvas内容是从Y=0开始画的，所以这里是裁剪掉原Canvas底部多余的空白)
+            tempCanvas.height = headerHeight + contentBottom + bottomPadding; 
+            
             const tCtx = tempCanvas.getContext('2d');
             
-            // 3. 根据类型处理背景
+            // 背景处理
             if (type === 'jpg') {
-                // 白底 JPG
                 tCtx.fillStyle = "#FFFFFF";
                 tCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
-            } else {
-                // 透明 PNG (什么都不做，默认透明)
             }
 
-            // 4. 绘制文字 (文字在透明背景上，注意深色文字)
+            // 6. 绘制标题
             const title = document.getElementById('displayTitle').innerText;
             tCtx.fillStyle = COLORS.text; 
             tCtx.font = "800 50px -apple-system, BlinkMacSystemFont, sans-serif";
             tCtx.textAlign = "center";
+            // 标题基线在80，视觉顶部约40。整个header 140，留白均衡。
             tCtx.fillText(title, tempCanvas.width/2, 80); 
 
-            // 5. 绘制副标题
             tCtx.fillStyle = COLORS.primary;
             tCtx.font = "700 16px -apple-system, BlinkMacSystemFont, sans-serif";
             tCtx.letterSpacing = "4px";
             tCtx.fillText("RADAR ANALYSIS", tempCanvas.width/2, 115);
 
-            // 6. 绘制雷达图
-            tCtx.drawImage(canvas, 0, headerHeight); 
+            // 7. 绘制主要内容 (下移 headerHeight)
+            // drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight)
+            // 我们只截取原Canvas中有效的内容部分
+            tCtx.drawImage(canvas, 
+                0, 0, canvas.width, contentBottom + 20, // source region (留一点余量)
+                0, headerHeight, canvas.width, contentBottom + 20 // dest region
+            );
 
-            // 7. 触发下载
+            // 8. 导出
             const link = document.createElement('a');
-            
             if (type === 'jpg') {
                 link.download = `${title}_Analysis.jpg`;
-                // JPG 质量 0.9
                 link.href = tempCanvas.toDataURL('image/jpeg', 0.9);
             } else {
                 link.download = `${title}_Analysis.png`;
                 link.href = tempCanvas.toDataURL('image/png');
             }
-            
             link.click();
         }
     </script>
