@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ACG Radar - Final Spacing</title>
+    <title>ACG Radar - Final Version</title>
     <style>
         :root {
-            --primary: #FF3B30; /* Apple Red */
+            --primary: #FF3B30;
             --bg: #F5F5F7;
             --card-bg: #FFFFFF;
             --text-main: #1D1D1F;
@@ -40,7 +40,7 @@
             gap: 40px;
             width: 100%;
             max-width: 1000px;
-            align-items: stretch; /* 强制等高 */
+            align-items: stretch; 
         }
 
         .card {
@@ -56,24 +56,22 @@
             justify-content: space-between; 
         }
 
-        /* --- 修改点1：右侧卡片增加顶部内边距 --- */
         .preview-area {
             align-items: center;
             position: relative;
-            padding-top: 50px; /* 让标题离方框顶部远一点 */
+            padding-top: 50px; 
             padding-bottom: 40px;
         }
 
-        /* --- 修改点2：增加标题下方的间距 --- */
         .chart-header {
             width: 100%;
             text-align: center;
-            margin-bottom: 50px; /* 拉开标题和下方雷达图的距离 */
+            margin-bottom: 50px; 
             margin-top: 0;
         }
 
         .chart-title {
-            font-size: 2.8rem; /* 稍微加大标题 */
+            font-size: 2.8rem;
             font-weight: 800;
             margin: 0;
             line-height: 1.2;
@@ -153,6 +151,11 @@
             box-shadow: 0 0 0 3px rgba(255, 59, 48, 0.1);
             outline: none;
         }
+        
+        input[type="text"]::placeholder {
+            color: #999;
+            opacity: 0.6;
+        }
 
         .btn {
             background: var(--text-main);
@@ -205,7 +208,7 @@
         canvas {
             width: 100%;
             height: auto;
-            max-height: 600px; /* 限制显示高度，防止溢出 */
+            max-height: 700px; 
             object-fit: contain;
         }
 
@@ -222,7 +225,7 @@
 </head>
 <body>
 
-    <h1>ANIME RADAR <span style="color:var(--primary)">.PRO</span></h1>
+    <h1>ANIME RADAR <span style="color:var(--primary)">.Sans</span></h1>
 
     <div class="container">
         <div class="card controls">
@@ -237,43 +240,43 @@
 
                 <div class="input-group">
                     <label>番剧名称</label>
-                    <input type="text" id="animeTitleInput" value="进击的巨人" oninput="updateTitle()">
+                    <input type="text" id="animeTitleInput" placeholder="请输入动漫名称" oninput="updateTitle()">
                 </div>
 
                 <hr>
-
+                
                 <div class="input-group">
-                    <label>剧情脚本 (Story) <span class="value-display" id="v1">9</span></label>
-                    <input type="range" min="4" max="10" step="1" value="9" oninput="updateVal('v1', this.value)">
+                    <label>剧情脚本 (Story) <span class="value-display" id="v1">5</span></label>
+                    <input type="range" min="1" max="10" step="0.5" value="5" oninput="updateVal('v1', this.value)">
                 </div>
                 <div class="input-group">
-                    <label>作画视觉 (Visuals) <span class="value-display" id="v2">9</span></label>
-                    <input type="range" min="4" max="10" step="1" value="9" oninput="updateVal('v2', this.value)">
+                    <label>作画视觉 (Visuals) <span class="value-display" id="v2">5</span></label>
+                    <input type="range" min="1" max="10" step="0.5" value="5" oninput="updateVal('v2', this.value)">
                 </div>
                 <div class="input-group">
-                    <label>角色塑造 (Character) <span class="value-display" id="v3">8</span></label>
-                    <input type="range" min="4" max="10" step="1" value="8" oninput="updateVal('v3', this.value)">
+                    <label>角色塑造 (Character) <span class="value-display" id="v3">5</span></label>
+                    <input type="range" min="1" max="10" step="0.5" value="5" oninput="updateVal('v3', this.value)">
                 </div>
                 <div class="input-group">
-                    <label>音乐音效 (Sound) <span class="value-display" id="v4">10</span></label>
-                    <input type="range" min="4" max="10" step="1" value="10" oninput="updateVal('v4', this.value)">
+                    <label>音乐音效 (Sound) <span class="value-display" id="v4">5</span></label>
+                    <input type="range" min="1" max="10" step="0.5" value="5" oninput="updateVal('v4', this.value)">
                 </div>
                 <div class="input-group">
-                    <label>演出表现 (Direction) <span class="value-display" id="v5">9</span></label>
-                    <input type="range" min="4" max="10" step="1" value="9" oninput="updateVal('v5', this.value)">
+                    <label>演出表现 (Direction) <span class="value-display" id="v5">5</span></label>
+                    <input type="range" min="1" max="10" step="0.5" value="5" oninput="updateVal('v5', this.value)">
                 </div>
             </div>
 
-            <button class="btn" onclick="downloadImage()">保存高清分析图</button>
+            <button class="btn" onclick="downloadImage()">导出高清 PNG</button>
         </div>
 
         <div class="card preview-area" id="captureArea">
             <div class="chart-header">
-                <h2 class="chart-title" id="displayTitle">进击的巨人</h2>
+                <h2 class="chart-title" id="displayTitle">番剧</h2>
                 <div class="chart-subtitle">RADAR ANALYSIS</div>
             </div>
 
-            <canvas id="radarCanvas" width="800" height="800"></canvas>
+            <canvas id="radarCanvas" width="800" height="900"></canvas>
             <img id="hidden-img" alt="hidden">
         </div>
     </div>
@@ -288,7 +291,8 @@
             grid: '#E5E5EA',
             text: '#1D1D1F',
             subText: '#86868B',
-            fill: 'rgba(255, 59, 48, 0.25)'
+            fill: 'rgba(255, 59, 48, 0.25)',
+            statsBg: '#F5F5F7'
         };
 
         let uploadedImage = null;
@@ -299,7 +303,7 @@
 
         function updateTitle() {
             const val = document.getElementById('animeTitleInput').value;
-            document.getElementById('displayTitle').innerText = val;
+            document.getElementById('displayTitle').innerText = val ? val : "番剧";
         }
 
         function updateVal(id, val) {
@@ -322,16 +326,26 @@
             }
         }
 
+        CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
+            if (w < 2 * r) r = w / 2;
+            if (h < 2 * r) r = h / 2;
+            this.beginPath();
+            this.moveTo(x + r, y);
+            this.arcTo(x + w, y, x + w, y + h, r);
+            this.arcTo(x + w, y + h, x, y + h, r);
+            this.arcTo(x, y + h, x, y, r);
+            this.arcTo(x, y, x + w, y, r);
+            this.closePath();
+            return this;
+        }
+
         function draw() {
             ctx.imageSmoothingEnabled = true;
             ctx.imageSmoothingQuality = 'high';
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
-            // --- 坐标系统调整 ---
             const centerX = canvas.width / 2;
-            // 修改点：将雷达图中心略微上移（因为我们增加了总高度，下面要留给统计）
-            // 之前的 centerY 可能会导致和上方标题太近，这里设为 320 左右（总高800）
             const centerY = 320; 
             const radius = 200; 
             
@@ -339,17 +353,16 @@
             const labelsEn = ["STORY", "VISUALS", "CHARACTER", "SOUND", "DIRECTION"];
             
             const values = [
-                parseInt(document.getElementById('v1').innerText),
-                parseInt(document.getElementById('v2').innerText),
-                parseInt(document.getElementById('v3').innerText),
-                parseInt(document.getElementById('v4').innerText),
-                parseInt(document.getElementById('v5').innerText)
+                parseFloat(document.getElementById('v1').innerText),
+                parseFloat(document.getElementById('v2').innerText),
+                parseFloat(document.getElementById('v3').innerText),
+                parseFloat(document.getElementById('v4').innerText),
+                parseFloat(document.getElementById('v5').innerText)
             ];
 
-            // 绘制网格
+            // Grid
             ctx.lineWidth = 1.5;
             ctx.strokeStyle = COLORS.grid;
-            
             for (let i = 0; i <= 5; i++) {
                 ctx.beginPath();
                 const r = (radius / 5) * i;
@@ -357,13 +370,10 @@
                     const angle = (Math.PI * 2 * j / 5) - Math.PI / 2;
                     const x = centerX + Math.cos(angle) * r;
                     const y = centerY + Math.sin(angle) * r;
-                    if (j === 0) ctx.moveTo(x, y);
-                    else ctx.lineTo(x, y);
+                    if (j === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
                 }
-                ctx.closePath();
-                ctx.stroke();
+                ctx.closePath(); ctx.stroke();
             }
-
             for (let j = 0; j < 5; j++) {
                 const angle = (Math.PI * 2 * j / 5) - Math.PI / 2;
                 ctx.beginPath();
@@ -372,24 +382,19 @@
                 ctx.stroke();
             }
 
-            // 绘制数据
+            // Data Polygon
             ctx.beginPath();
             ctx.lineWidth = 4;
             ctx.strokeStyle = COLORS.primary;
             ctx.fillStyle = COLORS.fill;
-
             for (let j = 0; j < 5; j++) {
                 let val = values[j];
-                let percent = (val - 4) / 6; 
-                if (percent < 0) percent = 0; 
-                
+                let percent = val / 10; if (percent < 0) percent = 0; 
                 const r = radius * percent;
                 const angle = (Math.PI * 2 * j / 5) - Math.PI / 2;
                 const x = centerX + Math.cos(angle) * r;
                 const y = centerY + Math.sin(angle) * r;
-                
-                if (j === 0) ctx.moveTo(x, y);
-                else ctx.lineTo(x, y);
+                if (j === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
             }
             ctx.closePath();
             ctx.shadowColor = "rgba(255, 59, 48, 0.4)";
@@ -398,113 +403,147 @@
             ctx.shadowBlur = 0;
             ctx.stroke();
 
-            // 绘制标签
+            // Labels
             for (let j = 0; j < 5; j++) {
                 const angle = (Math.PI * 2 * j / 5) - Math.PI / 2;
                 const textRadius = radius + 65; 
                 const x = centerX + Math.cos(angle) * textRadius;
                 const y = centerY + Math.sin(angle) * textRadius;
-
                 ctx.textAlign = "center";
                 ctx.font = "700 24px -apple-system, BlinkMacSystemFont, sans-serif";
                 ctx.fillStyle = COLORS.text;
                 ctx.fillText(labels[j], x, y - 10);
-                
                 ctx.font = "600 13px -apple-system, BlinkMacSystemFont, sans-serif";
                 ctx.fillStyle = COLORS.subText;
                 ctx.fillText(labelsEn[j], x, y + 8);
-
                 ctx.font = "800 32px -apple-system, BlinkMacSystemFont, sans-serif";
                 ctx.fillStyle = COLORS.primary;
                 ctx.fillText(values[j], x, y + 45);
             }
 
-            // 绘制封面
+            // Cover Image
             if (uploadedImage) {
                 ctx.save();
                 ctx.beginPath();
                 const imgR = 40; 
                 ctx.arc(centerX, centerY, imgR, 0, Math.PI * 2, true);
-                ctx.closePath();
-                ctx.clip();
-                
+                ctx.closePath(); ctx.clip();
                 const scale = Math.max(imgR*2 / uploadedImage.width, imgR*2 / uploadedImage.height);
                 const w = uploadedImage.width * scale;
                 const h = uploadedImage.height * scale;
                 ctx.drawImage(uploadedImage, centerX - w/2, centerY - h/2, w, h);
                 ctx.restore();
-
                 ctx.beginPath();
                 ctx.arc(centerX, centerY, imgR, 0, Math.PI * 2, true);
-                ctx.strokeStyle = "white";
-                ctx.lineWidth = 4;
-                ctx.stroke();
+                ctx.strokeStyle = "white"; ctx.lineWidth = 4; ctx.stroke();
             }
 
-            // --- 修改点4：底部统计下移 ---
+            // --- Stats Card ---
             const avgScore = (values.reduce((a, b) => a + b, 0) / 5).toFixed(1);
             const maxVal = Math.max(...values);
-            const maxLabels = labels.filter((_, i) => values[i] === maxVal);
-            let bestStatText = maxLabels.join("/");
-            if (bestStatText.length > 8) bestStatText = maxLabels[0] + "...";
-
-            // 将统计数据放在画布的最下方 (Y=720左右)
-            // 雷达图中心在320，半径200，底部边缘在520。所以720有足够的留白。
-            const statsY = 720;
+            // 修改点：如果所有分数都相等（例如初始状态），强制显示“无”
+            let maxLabels = labels.filter((_, i) => values[i] === maxVal);
             
-            ctx.textAlign = "center";
-            ctx.fillStyle = COLORS.subText;
-            ctx.font = "600 16px -apple-system, BlinkMacSystemFont, sans-serif";
-            ctx.fillText("AVERAGE SCORE", centerX - 150, statsY);
+            if (maxLabels.length === 5) {
+                maxLabels = ["无"];
+            }
             
-            ctx.fillStyle = COLORS.text;
-            ctx.font = "800 40px -apple-system, BlinkMacSystemFont, sans-serif";
-            ctx.fillText(avgScore, centerX - 150, statsY + 45);
+            // 字体大小逻辑
+            let rightFontSize = 34; 
+            let lineHeight = 38;
+            if (maxLabels.length > 2) { 
+                rightFontSize = 26; 
+                lineHeight = 30; 
+            }
+            const rightFontStr = `800 ${rightFontSize}px -apple-system, BlinkMacSystemFont, sans-serif`;
 
+            // 左侧字体放大逻辑：只有当右侧确实有多行时才放大，如果是"无"，则不放大
+            let leftFontSize = rightFontSize;
+            if (maxLabels.length > 1) {
+                leftFontSize = 52; 
+            }
+            const leftFontStr = `800 ${leftFontSize}px -apple-system, BlinkMacSystemFont, sans-serif`;
+
+            // Calculate Box Height
+            let baseHeight = 120;
+            let addedHeight = 0;
+            if (maxLabels.length > 1) {
+                addedHeight = (maxLabels.length - 1) * lineHeight;
+            }
+            
+            const statsBoxY = 640;
+            const statsBoxW = 560;
+            const statsBoxH = baseHeight + addedHeight;
+            const statsBoxR = 24;
+
+            // Background
+            ctx.fillStyle = COLORS.statsBg;
+            ctx.roundRect(centerX - statsBoxW/2, statsBoxY, statsBoxW, statsBoxH, statsBoxR);
+            ctx.fill();
+
+            // Divider Line
             ctx.beginPath();
-            ctx.moveTo(centerX, statsY);
-            ctx.lineTo(centerX, statsY + 45);
-            ctx.strokeStyle = "#E5E5EA";
+            ctx.moveTo(centerX, statsBoxY + 25);
+            ctx.lineTo(centerX, statsBoxY + statsBoxH - 25);
+            ctx.strokeStyle = "#D1D1D6"; 
             ctx.lineWidth = 2;
             ctx.stroke();
 
-            ctx.fillStyle = COLORS.subText;
-            ctx.font = "600 16px -apple-system, BlinkMacSystemFont, sans-serif";
-            ctx.fillText("BEST FIELD", centerX + 150, statsY);
+            // --- Text Drawing ---
+            const textStartY = statsBoxY + 85;
 
+            // Right Side (Best Field)
+            const rightX = centerX + statsBoxW/4;
+            ctx.textAlign = "center";
+            ctx.fillStyle = COLORS.subText;
+            ctx.font = "600 14px -apple-system, BlinkMacSystemFont, sans-serif";
+            ctx.fillText("最强领域 / BEST", rightX, statsBoxY + 35);
             ctx.fillStyle = COLORS.primary; 
-            ctx.font = "700 28px -apple-system, BlinkMacSystemFont, sans-serif";
-            ctx.fillText(bestStatText, centerX + 150, statsY + 40);
+            ctx.font = rightFontStr; 
+            maxLabels.forEach((label, i) => {
+                ctx.fillText(label, rightX, textStartY + (i * lineHeight));
+            });
+
+            // Left Side (Average)
+            const leftX = centerX - statsBoxW/4;
+            ctx.fillStyle = COLORS.subText;
+            ctx.font = "600 14px -apple-system, BlinkMacSystemFont, sans-serif";
+            ctx.fillText("综合评分 / AVERAGE", leftX, statsBoxY + 35);
+            ctx.fillStyle = COLORS.text;
+            ctx.font = leftFontStr; 
+            
+            let leftY = textStartY;
+            if (maxLabels.length > 1) {
+                leftY = textStartY + ((maxLabels.length - 1) * lineHeight) / 2;
+            }
+            ctx.fillText(avgScore, leftX, leftY); 
         }
 
         function downloadImage() {
             const tempCanvas = document.createElement('canvas');
-            // 导出高度也增加，包含标题留白
+            const headerHeight = 140; 
             tempCanvas.width = canvas.width;
-            tempCanvas.height = canvas.height + 150; 
+            tempCanvas.height = canvas.height + headerHeight; 
             const tCtx = tempCanvas.getContext('2d');
             
-            // 白底
             tCtx.fillStyle = "#FFFFFF";
             tCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
 
-            // 绘制标题 (位置也要调整，不能太靠上)
             const title = document.getElementById('displayTitle').innerText;
             tCtx.fillStyle = COLORS.text;
-            tCtx.font = "800 64px -apple-system, BlinkMacSystemFont, sans-serif";
+            tCtx.font = "800 50px -apple-system, BlinkMacSystemFont, sans-serif";
             tCtx.textAlign = "center";
-            tCtx.fillText(title, tempCanvas.width/2, 100); // Title Y
+            tCtx.fillText(title, tempCanvas.width/2, 80); 
 
             tCtx.fillStyle = COLORS.primary;
-            tCtx.font = "700 20px -apple-system, BlinkMacSystemFont, sans-serif";
+            tCtx.font = "700 16px -apple-system, BlinkMacSystemFont, sans-serif";
             tCtx.letterSpacing = "4px";
-            tCtx.fillText("RADAR ANALYSIS", tempCanvas.width/2, 140);
+            tCtx.fillText("RADAR ANALYSIS", tempCanvas.width/2, 115);
 
-            // 绘制雷达图，下移
-            tCtx.drawImage(canvas, 0, 150); 
+            tCtx.drawImage(canvas, 0, headerHeight); 
 
             const link = document.createElement('a');
-            link.download = `${title}_Radar.png`;
+            link.download = `${title}_Analysis.png`;
             link.href = tempCanvas.toDataURL('image/png');
             link.click();
         }
